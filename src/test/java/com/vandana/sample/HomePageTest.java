@@ -13,8 +13,10 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import pages.HomePage;
+import utilities.BaseTest;
+import utilities.DriverFactory;
 import utilities.ScreenshotUtilities;
-//import static utilities.DriverFactory.driver;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,42 +26,24 @@ import java.util.ArrayList;
 import java.util.Date;
 
 
-public class HomePageTest {
+public class HomePageTest extends BaseTest {
 
-    WebDriver driver;
+    // WebDriver driver;
     HomePage homePage;
     HomePage homepagelinkedIn;
 
-    //opening the browser
-    @BeforeClass
-    public void setUpBrowser() {
-        WebDriverManager.chromedriver().setup(); //setup chrome using webdrivermanager
-        driver = new ChromeDriver(); //launch chrome
-        driver.manage().window().maximize();
-        //   driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));//set implicit wait
-    }
-
-    //opening the url
+    //clicking on twitter icon and verifying the URL
     @Test(priority = 1)
-    public void openHomePage() {
-
-        driver.get("https://www.hardrockdigital.com/"); //open url
-    }
-
-    //clicking on twitter icon
-    @Test(priority = 2)
     public void clickOnTwitterIcon() throws InterruptedException {
-        homePage = new HomePage(driver);
+        homePage = new HomePage(DriverFactory.getDriver());
         homePage.clickOnTwitterIcon();
-    }
+        Thread.sleep(3000);//explicit wait for new tab to open
 
-    //verifying twitter link opened correctly
-    @Test(priority = 3)
-    public void verifytwitterlink() {
-        ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
-        driver.switchTo().window(tabs.get(1));
+        //verifying twitter link opened correctly
+        ArrayList<String> tabs = new ArrayList<>(DriverFactory.getDriver().getWindowHandles());
+        DriverFactory.getDriver().switchTo().window(tabs.get(1));
 
-        String currentUrl = driver.getCurrentUrl();
+        String currentUrl = DriverFactory.getDriver().getCurrentUrl();
         System.out.println("Opened URL: " + currentUrl);
 
         Assert.assertTrue(
@@ -67,25 +51,19 @@ public class HomePageTest {
                 "Twitter page did not open correctly!"
         );
         //twitter tab closed and cursor switched back to main url
-        driver.close();
+        DriverFactory.getDriver().close();
         System.out.println("Twitter tab closed successfully");
-        driver.switchTo().window(tabs.get(0));
+        DriverFactory.getDriver().switchTo().window(tabs.get(0));
         System.out.println("switched back to Hard Rock Digital tab");
     }
 
-    // Click LinkedIn icon
-    @Test(priority = 4)
-    public void clicklinkedInicon() {
-        homepagelinkedIn = new HomePage(driver);
+    // Click LinkedIn icon and verifying the icon
+    @Test(priority = 2)
+    public void clicklinkedInicon() throws InterruptedException {
+        homepagelinkedIn = new HomePage(DriverFactory.getDriver());
         homepagelinkedIn.clicklinkedInicon();
-    }
-
-    //verify LinkedIn icon opens HardRock Digital LinkedIn page
-    @Test(priority = 5)
-    public void verifylinkedInicon() throws InterruptedException {
         ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
         driver.switchTo().window(tabs.get(1));
-
         String currentUrl = driver.getCurrentUrl();
         System.out.println("Opened URL: " + currentUrl);
 
@@ -110,14 +88,6 @@ public class HomePageTest {
         }
     }
 
-    //closing the browser
-    @AfterClass
-    public void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
-    }
 }
-
 
 
